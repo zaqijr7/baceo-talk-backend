@@ -13,10 +13,10 @@ exports.sendMessage = async (req, res) => {
     receipentId,
     message
   }
-  console.log(dataMessage)
   try {
     const result = await chatModel.inputMessage(dataMessage)
     if (result.affectedRows > 0) {
+      req.socket.emit(receipentId, result)
       res.status(200).json({
         success: true,
         message: 'Chat sended !'
@@ -37,7 +37,7 @@ exports.chatHistoryReceipent = async (req, res) => {
   }
   cond.search = cond.search || ''
   cond.page = Number(cond.page) || 1
-  cond.limit = Number(cond.limit) || 2
+  cond.limit = Number(cond.limit) || 10
   cond.dataLimit = cond.limit * cond.page
   cond.offset = (cond.page - 1) * cond.limit
   cond.sort = cond.sort || 'createdAt'
@@ -68,8 +68,8 @@ exports.historyInteractions = async (req, res) => {
   try {
     const historyInteraction = await chatModel.interactionHistory(idUser)
     const people = historyInteraction.filter(item => item.history !== idUser)
+    people.reverse()
     const results = await Promise.all(people.map(item => chatModel.latestChatHistory({ senderId: idUser, receipentId: item.history })))
-    console.log(results)
     const dataFinnaly = []
     for (let index = 0; index < results.length; index++) {
       const data = {
@@ -90,7 +90,6 @@ exports.historyInteractions = async (req, res) => {
       }
       dataFinnaly.push(data)
     }
-    console.log(dataFinnaly, ' ini data akhir')
     res.status(200).json({
       success: true,
       message: 'history interactions',

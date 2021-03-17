@@ -44,7 +44,7 @@ exports.totalDataChatByCondition = (data, cond) => {
 
 exports.latestChatHistory = (data, cond) => {
   return new Promise((resolve, reject) => {
-    const q = db.query(`
+    db.query(`
     SELECT chathistory.id_chat, sender.id_user AS senderId, sender.email AS senderEmail, sender.phoneNumber AS senderPhoneNumber,
     sender.name AS senderName, sender.photo AS senderPhoto, receipent.id_user AS receipentId, receipent.email AS receipentEmail, 
     receipent.phoneNumber AS receipentPhoneNumber, receipent.name AS receipentName,
@@ -58,7 +58,6 @@ exports.latestChatHistory = (data, cond) => {
       if (err) reject(err)
       resolve(res)
     })
-    console.log(q.sql)
   })
 }
 

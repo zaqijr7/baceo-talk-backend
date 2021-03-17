@@ -17,13 +17,12 @@ exports.createUserAsync = (data = {}) => {
 
 exports.getUsersByConditionAsync = (cond) => {
   return new Promise((resolve, reject) => {
-    const q = db.query(`
+    db.query(`
       SELECT * FROM users WHERE ${Object.keys(cond).map(item => `${item}="${cond[item]}"`).join(' AND ')}
       `, (err, res, field) => {
       if (err) reject(err)
       resolve(res)
     })
-    console.log(q.sql)
   })
 }
 
@@ -39,10 +38,26 @@ exports.getUserById = (id) => {
   })
 }
 
-exports.getAllUser = () => {
+exports.getAllUser = (cond) => {
   return new Promise((resolve, reject) => {
     const q = db.query(`
-      SELECT * FROM users
+      SELECT * FROM users WHERE name LIKE "%${cond.search}%" 
+      OR email LIKE "%${cond.search}%" OR phoneNumber LIKE "%${cond.search}%"
+      ORDER BY ${cond.sort} ${cond.order}
+      `, (err, res, field) => {
+      if (err) reject(err)
+      resolve(res)
+    })
+    console.log(q.sql)
+  })
+}
+
+exports.getAllUserWhitoutLimit = (cond) => {
+  return new Promise((resolve, reject) => {
+    const q = db.query(`
+      SELECT * FROM users WHERE name LIKE "%${cond.search}%" 
+      OR email LIKE "%${cond.search}%" OR phoneNumber LIKE "%${cond.search}%"
+      ORDER BY ${cond.sort} ${cond.order}
       `, (err, res, field) => {
       if (err) reject(err)
       resolve(res)

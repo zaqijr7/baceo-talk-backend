@@ -6,5 +6,6 @@ routes.get('/:id', usersController.getProfile)
 routes.get('/', usersController.getAllProfile)
 routes.patch('/', authMiddleware.authCheck, usersController.updateProfile)
 routes.put('/', authMiddleware.authCheck, usersController.updatePhoto)
+routes.delete('/', authMiddleware.authCheck, usersController.deletePhoto)
 
 module.exports = routes

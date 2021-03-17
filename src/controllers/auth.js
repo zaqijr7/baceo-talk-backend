@@ -9,7 +9,6 @@ const { sendEmail } = require('../helpers/sendMail')
 // <-------------CONTROLLERS--------->
 exports.register = async (req, res) => {
   const { email, phoneNumber } = req.body
-  console.log(email)
   try {
     const emailExist = await userModel.getUsersByConditionAsync({ email })
     if (emailExist.length > 0) {
