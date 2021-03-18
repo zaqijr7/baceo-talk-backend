@@ -44,6 +44,7 @@ exports.chatHistoryReceipent = async (req, res) => {
   cond.order = cond.order || 'DESC'
   try {
     const history = await chatModel.historyChatByReceipentId(data, cond)
+    req.socket.emit(receipentId, history)
     const totalData = await chatModel.totalDataChatByCondition(data, cond)
     res.status(200).json({
       success: true,
