@@ -2,7 +2,7 @@ const db = require('../helpers/db')
 
 exports.inputMessage = (data) => {
   return new Promise((resolve, reject) => {
-    const q = db.query(`
+    db.query(`
         INSERT INTO chathistory
         (${Object.keys(data).join()})
         VALUES
@@ -11,13 +11,12 @@ exports.inputMessage = (data) => {
       if (err) reject(err)
       resolve(res)
     })
-    console.log(q.sql)
   })
 }
 
 exports.historyChatByReceipentId = (data, cond) => {
   return new Promise((resolve, reject) => {
-    const q = db.query(`
+    db.query(`
     SELECT * FROM chathistory WHERE senderId=${data.senderId} AND receipentId=${data.receipentId} OR senderId=${data.receipentId} AND receipentId=${data.senderId}
     ORDER BY ${cond.sort} ${cond.order}
     LIMIT ${cond.limit} OFFSET ${cond.offset}
@@ -25,7 +24,6 @@ exports.historyChatByReceipentId = (data, cond) => {
       if (err) reject(err)
       resolve(res)
     })
-    console.log(q.sql)
   })
 }
 
@@ -63,27 +61,25 @@ exports.latestChatHistory = (data, cond) => {
 
 exports.interactionHistory = (data) => {
   return new Promise((resolve, reject) => {
-    const q = db.query(`
+    db.query(`
     SELECT DISTINCT senderId as history FROM chathistory  WHERE 
     receipentId=${data} OR senderId=${data} UNION SELECT DISTINCT receipentId FROM chathistory  WHERE 
-    receipentId=${data} OR senderId=${data}
+    receipentId=${data} OR senderId=${data} 
     `, (err, res, field) => {
       if (err) reject(err)
       resolve(res)
     })
-    console.log(q.sql)
   })
 }
 
 exports.deleteMessage = (data) => {
   return new Promise((resolve, reject) => {
-    const q = db.query(`
+    db.query(`
     DELETE FROM chathistory
     WHERE id_chat IN (${data.join()});
     `, (err, res, field) => {
       if (err) reject(err)
       resolve(res)
     })
-    console.log(q.sql)
   })
 }
