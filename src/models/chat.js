@@ -2,15 +2,16 @@ const db = require('../helpers/db')
 
 exports.inputMessage = (data) => {
   return new Promise((resolve, reject) => {
-    db.query(`
+    const q = db.query(`
         INSERT INTO chathistory
-        (${Object.keys(data).join()})
+        (senderId, receipentId, message)
         VALUES
-        (${Object.values(data).map(item => `"${item}"`).join(',')})
-        `, (err, res, field) => {
+        ("${data.senderId}", "${data.receipentId}", ?)
+        `, [data.message], (err, res, field) => {
       if (err) reject(err)
       resolve(res)
     })
+    console.log(q.sql)
   })
 }
 
