@@ -76,15 +76,15 @@ exports.register = async (req, res) => {
 }
 
 exports.login = async (req, res) => {
-  const { email, pin } = req.body
+  const { email, pin, tokenNotif } = req.body
   try {
     const existingUser = await userModel.getUsersByConditionAsync({ email })
     if (existingUser.length > 0) {
       const compare = await bcrypt.compare(pin, existingUser[0].pin)
       if (compare) {
         const id = existingUser[0].id_user
-        console.log(id)
         const token = jwt.sign({ id, email: email }, APP_KEY)
+        await userModel.updateProfile(id, { tokenNotif })
         return res.status(200).json({
           success: true,
           message: 'Login Successfully',
@@ -99,6 +99,23 @@ exports.login = async (req, res) => {
     return res.status(404).json({
       success: false,
       message: 'PIN is Wrong'
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: responseStatus.serverError(res)
+    })
+  }
+}
+
+exports.logout = async (req, res) => {
+  const { id } = req.query
+  console.log(id, 'ini id')
+  try {
+    await userModel.deleteTokenNotif(id)
+    return res.status(200).json({
+      success: true,
+      message: 'Logut Successfully'
     })
   } catch (error) {
     return res.status(500).json({

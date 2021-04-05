@@ -83,6 +83,20 @@ exports.updateProfile = (id, data) => {
   })
 }
 
+exports.deleteTokenNotif = (id, data) => {
+  return new Promise((resolve, reject) => {
+    const q = db.query(`
+    UPDATE users
+    SET tokenNotif = NULL
+    WHERE id_user=${id}
+      `, (err, res, field) => {
+      if (err) reject(err)
+      resolve(res)
+    })
+    console.log(q.sql, 'ini kuerynya')
+  })
+}
+
 exports.updatePhotoProfile = (data) => {
   return new Promise((resolve, reject) => {
     db.query(`

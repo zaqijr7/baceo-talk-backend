@@ -4,5 +4,6 @@ const { validationInputRegister, validationInput } = require('../middlewares/val
 
 routes.post('/', validationInputRegister, validationInput, authController.register)
 routes.patch('/', authController.login)
+routes.delete('/', authController.logout)
 
 module.exports = routes

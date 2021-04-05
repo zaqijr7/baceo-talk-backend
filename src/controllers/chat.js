@@ -1,5 +1,7 @@
 const chatModel = require('../models/chat')
+const userModel = require('../models/users')
 const responseStatus = require('../helpers/responseStatus')
+const firebase = require('../helpers/firebase')
 const nextLink = require('../helpers/nextLink')
 const prevLink = require('../helpers/prevLink')
 const { APP_URL } = process.env
@@ -15,6 +17,17 @@ exports.sendMessage = async (req, res) => {
   }
   try {
     const result = await chatModel.inputMessage(dataMessage)
+    const detailSender = await userModel.getUserById(senderId)
+    const detailUser = await userModel.getUserById(receipentId)
+    if (detailUser[0].tokenNotif !== null) {
+      const notif = firebase.messaging()
+      notif.sendToDevice(detailUser[0].tokenNotif, {
+        notification: {
+          title: 'New Message',
+          body: `${detailSender[0].name} : ${message}`
+        }
+      })
+    }
     if (result.affectedRows > 0) {
       req.socket.emit(`SEND_CHAT_TO_${receipentId}`, dataMessage)
       res.status(200).json({
